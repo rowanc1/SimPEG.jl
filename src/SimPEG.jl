@@ -4,23 +4,26 @@ module SimPEG
 
 import Mesh
 importall Utils
-import LinearOperators: faceDiv, nodalGrad, edgeCurl
-
-
+importall LinearOperators
 
 export Mesh
 
 
-hx = ones(1)
+hx = ones(3)
 hy = ones(2)
 hz = ones(3)*2
 
-M = Mesh.TensorMesh(hx, hy, hz)
-println(M)
-println(M.cnt.nF)
+M = Mesh.TensorMesh(hx)
+println(M.cnt.vnEx)
 
-@time println(full(faceDiv(M)))
-@time println(full(edgeCurl(M)))
-@time println(full(nodalGrad(M)))
+D = faceDiv(M)
+C = edgeCurl(M)
+G = nodalGrad(M)
+
+Av = aveCC2F(M)
+
+println(full(Av))
+
+# D*C*G
 
 end

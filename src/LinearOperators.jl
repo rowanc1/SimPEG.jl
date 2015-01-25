@@ -2,7 +2,9 @@ module LinearOperators
 
 import Mesh
 
-import Utils: ddx, sdiag, kron3
+import Utils: ddx, sdiag, kron3, av, avExtrap
+
+export faceDiv, nodalGrad, edgeCurl, aveF2CC, aveF2CCV, aveCC2F, aveE2CC, aveE2CCV, aveN2CC, aveN2E, aveN2F
 
 function faceDiv(M::Mesh.AbstractTensorMesh)
 
@@ -107,6 +109,169 @@ function edgeCurl(M::Mesh.AbstractTensorMesh)
 
     end
 
+end
+
+
+# --------------- Averaging ---------------------
+
+function aveF2CC(M::Mesh.AbstractTensorMesh)
+    """Construct the averaging operator on cell faces to cell centers."""
+    if isdefined(M.ops, :aveF2CC)
+        return M.ops.aveF2CC
+    end
+    n = M.cnt.vnC
+    if M.cnt.dim == 1
+        M.ops.aveF2CC = av(n[1])
+    elseif M.cnt.dim == 2
+        f2ccx = kron(speye(n[2]), av(n[1]))
+        f2ccy = kron(av(n[2]), speye(n[1]))
+        M.ops.aveF2CC = (0.5).*[ f2ccx f2ccy ]
+    elseif M.cnt.dim == 3
+        f2ccx = kron3(speye(n[3]), speye(n[2]), av(n[1]))
+        f2ccy = kron3(speye(n[3]), av(n[2]), speye(n[1]))
+        f2ccz = kron3(av(n[3]), speye(n[2]), speye(n[1]))
+        M.ops.aveF2CC = (1./3.).*[ f2ccx f2ccy f2ccz ]
+    end
+    return M.ops.aveF2CC
+end
+
+
+
+function aveF2CCV(M::Mesh.AbstractTensorMesh)
+    """Construct the averaging operator on cell faces to cell centers."""
+    if isdefined(M.ops, :aveF2CCV)
+        return M.ops.aveF2CCV
+    end
+    n = M.cnt.vnC
+    if M.cnt.dim == 1
+        M.ops.aveF2CCV = av(n[1])
+    elseif M.cnt.dim == 2
+        M.ops.aveF2CCV = blkdiag(kron(speye(n[2]), av(n[1])), kron(av(n[2]), speye(n[1])))
+    elseif M.cnt.dim == 3
+        M.ops.aveF2CCV = blkdiag(kron3(speye(n[3]), speye(n[2]), av(n[1])),
+                                 kron3(speye(n[3]), av(n[2]), speye(n[1])),
+                                 kron3(av(n[3]), speye(n[2]), speye(n[1])))
+    end
+    return M.ops.aveF2CCV
+end
+
+
+function aveCC2F(M::Mesh.AbstractTensorMesh)
+    """Construct the averaging operator on cell cell centers to faces."""
+    if isdefined(M.ops, :aveCC2F)
+        return M.ops.aveCC2F
+    end
+    n = M.cnt.vnC
+    if M.cnt.dim == 1
+        M.ops.aveCC2F = avExtrap(n[1])
+    elseif M.cnt.dim == 2
+        M.ops.aveCC2F = [kron(speye(n[2]), avExtrap(n[1])),
+                         kron(avExtrap(n[2]), speye(n[1]))]
+    elseif M.cnt.dim == 3
+        M.ops.aveCC2F = [kron3(speye(n[3]), speye(n[2]), avExtrap(n[1])),
+                         kron3(speye(n[3]), avExtrap(n[2]), speye(n[1])),
+                         kron3(avExtrap(n[3]), speye(n[2]), speye(n[1]))]
+    end
+    return M.ops.aveCC2F
+end
+
+
+function aveE2CC(M::Mesh.AbstractTensorMesh)
+    """Construct the averaging operator on cell edges to cell centers."""
+    if isdefined(M.ops, :aveE2CC)
+        return M.ops.aveE2CC
+    end
+    n = M.cnt.vnC
+    if M.cnt.dim == 1
+        M.ops.aveE2CC = speye(n[1])
+    elseif M.cnt.dim == 2
+        e2ccx = kron(av(n[2]), speye(n[1]))
+        e2ccy = kron(speye(n[2]), av(n[1]))
+        M.ops.aveE2CC = 0.5.*[ e2ccx e2ccy ]
+    elseif M.cnt.dim == 3
+        e2ccx = kron3(av(n[3]), av(n[2]), speye(n[1]))
+        e2ccy = kron3(av(n[3]), speye(n[2]), av(n[1]))
+        e2ccz = kron3(speye(n[3]), av(n[2]), av(n[1]))
+        M.ops.aveE2CC = (1./3).*[ e2ccx e2ccy e2ccz ]
+    end
+    return M.ops.aveE2CC
+end
+
+
+function aveE2CCV(M::Mesh.AbstractTensorMesh)
+    """Construct the averaging operator on cell edges to cell centers."""
+    if isdefined(M.ops, :aveE2CCV)
+        return M.ops.aveE2CCV
+    end
+    n = M.cnt.vnC
+    if M.cnt.dim == 1
+        error("Edge Averaging does not make sense in 1D: Use Identity?")
+    elseif M.cnt.dim == 2
+        M.ops.aveE2CCV = blkdiag(kron(av(n[2]), speye(n[1])), kron(speye(n[2]), av(n[1])))
+    elseif M.cnt.dim == 3
+        M.ops.aveE2CCV = blkdiag(kron3(av(n[3]), av(n[2]), speye(n[1])),
+                                 kron3(av(n[3]), speye(n[2]), av(n[1])),
+                                 kron3(speye(n[3]), av(n[2]), av(n[1])))
+    end
+    return M.ops.aveE2CCV
+end
+
+
+function aveN2CC(M::Mesh.AbstractTensorMesh)
+    """Construct the averaging operator on cell nodes to cell centers."""
+    if isdefined(M.ops, :aveN2CC)
+        return M.ops.aveN2CC
+    end
+    n = M.cnt.vnC
+    if M.cnt.dim == 1
+        M.ops.aveN2CC = av(n[1])
+    elseif M.cnt.dim == 2
+        M.ops.aveN2CC = kron(av(n[2]), av(n[1]))
+    elseif M.cnt.dim == 3
+        M.ops.aveN2CC = kron3(av(n[3]), av(n[2]), av(n[1]))
+    end
+    return M.ops.aveN2CC
+end
+
+
+function aveN2E(M::Mesh.AbstractTensorMesh)
+    """Construct the averaging operator on cell nodes to cell edges, keeping each dimension separate."""
+
+    if isdefined(M.ops, :aveN2E)
+        return M.ops.aveN2E
+    end
+    n = M.cnt.vnC
+    if M.cnt.dim == 1
+        M.ops.aveN2E = av(n[1])
+    elseif M.cnt.dim == 2
+        M.ops.aveN2E = [kron(speye(n[2]+1), av(n[1])),
+                        kron(av(n[2]), speye(n[1]+1))]
+    elseif M.cnt.dim == 3
+        M.ops.aveN2E = [kron3(speye(n[3]+1), speye(n[2]+1), av(n[1])),
+                        kron3(speye(n[3]+1), av(n[2]), speye(n[1]+1)),
+                        kron3(av(n[3]), speye(n[2]+1), speye(n[1]+1))]
+    end
+    return M.ops.aveN2E
+end
+
+
+function aveN2F(M::Mesh.AbstractTensorMesh)
+    """Construct the averaging operator on cell nodes to cell faces, keeping each dimension separate."""
+    if isdefined(M.ops, :aveN2F)
+        return M.ops.aveN2F
+    end
+    n = M.cnt.vnC
+    if M.cnt.dim == 1
+        M.ops.aveN2F = av(n[1])
+    elseif M.cnt.dim == 2
+        M.ops.aveN2F = [kron(av(n[2]), speye(n[1]+1)),
+                        kron(speye(n[2]+1), av(n[1]))]
+    elseif M.cnt.dim == 3
+        M.ops.aveN2F = [kron3(av(n[3]), av(n[2]), speye(n[1]+1)),
+                        kron3(av(n[3]), speye(n[2]+1), av(n[1])),
+                        kron3(speye(n[3]+1), av(n[2]), av(n[1]))]
+    end
+    return M.ops.aveN2F
 end
 
 
