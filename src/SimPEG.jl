@@ -5,6 +5,7 @@ module SimPEG
 import Mesh
 importall Utils
 importall LinearOperators
+importall MeshGrid
 
 export Mesh
 
@@ -19,6 +20,7 @@ println(M.cnt.vnEx)
 D = faceDiv(M)
 C = edgeCurl(M)
 G = nodalGrad(M)
+# D*C*G
 
 Av = aveCC2F(M)
 sigma = ones(M.cnt.nC)
@@ -32,12 +34,6 @@ q[50,25] = -1.0
 q[50,75] = +1.0
 q = q[:]
 
-phi = A\q
-
-print(phi)
-
-
-
-# D*C*G
+@time phi = A\q
 
 end
