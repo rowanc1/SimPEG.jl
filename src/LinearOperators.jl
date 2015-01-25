@@ -2,9 +2,9 @@ module LinearOperators
 
 import Mesh
 
-import Utils: ddx, sdiag, kron3, av, avExtrap
+import Utils: ddx, sdiag, kron3, av, avExtrap, sdInv
 
-export faceDiv, nodalGrad, edgeCurl, aveF2CC, aveF2CCV, aveCC2F, aveE2CC, aveE2CCV, aveN2CC, aveN2E, aveN2F
+export faceDiv, nodalGrad, edgeCurl, aveF2CC, aveF2CCV, aveCC2F, aveE2CC, aveE2CCV, aveN2CC, aveN2E, aveN2F, getFaceInnerProduct, getEdgeInnerProduct
 
 function faceDiv(M::Mesh.AbstractTensorMesh)
 
@@ -274,5 +274,43 @@ function aveN2F(M::Mesh.AbstractTensorMesh)
     return M.ops.aveN2F
 end
 
+function getTensorInnerProduct(projType::String, M::Mesh.AbstractTensorMesh, prop=ones(M.cnt.nC); invProp::Bool=false, invMat::Bool=false)
+
+    @assert projType in ["E", "F"]
+
+    if invProp
+        prop = 1.0./prop
+    end
+
+    if typeof(prop) <: Number
+        prop = prop.*ones(M.cnt.nC)
+    end
+
+    if length(prop) == M.cnt.nC
+        Av = (projType == "E")? aveE2CC(M) : aveF2CC(M)
+        Vprop = M.vol .* prop[:]
+        M = M.cnt.dim * sdiag(Av' * Vprop)
+    elseif length(prop) == M.cnt.nC*M.cnt.dim
+        Av = (projType == "E")? aveE2CCV(M) : aveF2CCV(M)
+        V = kron(speye(M.cnt.dim), sdiag(M.vol))
+        M = sdiag(Av' * V * prop[:])
+    else
+        return
+    end
+
+    if invMat
+        return sdInv(M)
+    else
+        return M
+    end
+
+end
+
+function getFaceInnerProduct(M::Mesh.AbstractTensorMesh, prop=ones(M.cnt.nC); invProp::Bool=false, invMat::Bool=false)
+    return getTensorInnerProduct("F", M, prop; invProp=invProp, invMat=invMat)
+end
+function getEdgeInnerProduct(M::Mesh.AbstractTensorMesh, prop=ones(M.cnt.nC); invProp::Bool=false, invMat::Bool=false)
+    return getTensorInnerProduct("E", M, prop; invProp=invProp, invMat=invMat)
+end
 
 end

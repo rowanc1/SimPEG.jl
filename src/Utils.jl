@@ -24,4 +24,8 @@ function kron3(A, B, C)
     return kron( kron(A, B), C )
 end
 
+function sdInv(A)
+    return sdiag(1.0./diag(A))
+end
+
 end

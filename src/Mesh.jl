@@ -4,14 +4,28 @@ abstract AbstractSimpegMesh
 abstract AbstractTensorMesh <: AbstractSimpegMesh
 
 import MeshCount
-import MeshOperators
+
+type DifferentialOperators
+    DifferentialOperators() = new()
+    faceDiv::SparseMatrixCSC
+    nodalGrad::SparseMatrixCSC
+    edgeCurl::SparseMatrixCSC
+    aveF2CC::SparseMatrixCSC
+    aveF2CCV::SparseMatrixCSC
+    aveCC2F::SparseMatrixCSC
+    aveE2CC::SparseMatrixCSC
+    aveE2CCV::SparseMatrixCSC
+    aveN2CC::SparseMatrixCSC
+    aveN2E::SparseMatrixCSC
+    aveN2F::SparseMatrixCSC
+end
 
 type TensorMesh1D <: AbstractTensorMesh
     hx::Vector{Float64}
     x0::Vector{Float64}
     cnt::MeshCount.TensorMesh1DCounters
-    ops::MeshOperators.DifferentialOperators
-    TensorMesh1D(hx, x0) = new(hx, x0, MeshCount.countTensorMesh([length(hx)]), MeshOperators.DifferentialOperators())
+    ops::DifferentialOperators
+    TensorMesh1D(hx, x0) = new(hx, x0, MeshCount.countTensorMesh([length(hx)]), DifferentialOperators())
     vol::Vector{Float64}
     area::Vector{Float64}
     edge::Vector{Float64}
@@ -22,8 +36,8 @@ type TensorMesh2D <: AbstractTensorMesh
     hy::Vector{Float64}
     x0::Vector{Float64}
     cnt::MeshCount.TensorMesh2DCounters
-    ops::MeshOperators.DifferentialOperators
-    TensorMesh2D(hx, hy, x0) = new(hx, hy, x0, MeshCount.countTensorMesh([length(hx), length(hy)]), MeshOperators.DifferentialOperators())
+    ops::DifferentialOperators
+    TensorMesh2D(hx, hy, x0) = new(hx, hy, x0, MeshCount.countTensorMesh([length(hx), length(hy)]), DifferentialOperators())
     vol::Vector{Float64}
     area::Vector{Float64}
     edge::Vector{Float64}
@@ -35,8 +49,8 @@ type TensorMesh3D <: AbstractTensorMesh
     hz::Vector{Float64}
     x0::Vector{Float64}
     cnt::MeshCount.TensorMesh3DCounters
-    ops::MeshOperators.DifferentialOperators
-    TensorMesh3D(hx, hy, hz, x0) = new(hx, hy, hz, x0, MeshCount.countTensorMesh([length(hx), length(hy), length(hz)]), MeshOperators.DifferentialOperators())
+    ops::DifferentialOperators
+    TensorMesh3D(hx, hy, hz, x0) = new(hx, hy, hz, x0, MeshCount.countTensorMesh([length(hx), length(hy), length(hz)]), DifferentialOperators())
     vol::Vector{Float64}
     area::Vector{Float64}
     edge::Vector{Float64}
