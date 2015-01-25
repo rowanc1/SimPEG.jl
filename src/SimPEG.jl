@@ -4,7 +4,7 @@ module SimPEG
 
 import Mesh
 importall Utils
-import LinearOperators: faceDiv
+import LinearOperators: faceDiv, nodalGrad, edgeCurl
 
 
 
@@ -20,6 +20,7 @@ println(M)
 println(M.cnt.nF)
 
 @time println(full(faceDiv(M)))
-@time println(full(faceDiv(M)))
+@time println(full(edgeCurl(M)))
+@time println(full(nodalGrad(M)))
 
 end
