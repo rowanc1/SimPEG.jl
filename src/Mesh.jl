@@ -1,40 +1,42 @@
 module Mesh
 
-abstract SimpegMesh
-abstract SimpegMesh1D <: SimpegMesh
-abstract SimpegMesh2D <: SimpegMesh
-abstract SimpegMesh3D <: SimpegMesh
+abstract AbstractSimpegMesh
+abstract AbstractTensorMesh <: AbstractSimpegMesh
 
 import MeshCount
+import MeshOperators
 
-type TensorMesh1D <: SimpegMesh2D
+type TensorMesh1D <: AbstractTensorMesh
     hx::Vector{Float64}
     x0::Vector{Float64}
     cnt::MeshCount.TensorMesh1DCounters
-    TensorMesh1D(hx, x0) = new(hx, x0, MeshCount.countTensorMesh([length(hx)]))
+    ops::MeshOperators.DifferentialOperators
+    TensorMesh1D(hx, x0) = new(hx, x0, MeshCount.countTensorMesh([length(hx)]), MeshOperators.DifferentialOperators())
     vol::Vector{Float64}
     area::Vector{Float64}
     edge::Vector{Float64}
 end
 
-type TensorMesh2D <: SimpegMesh2D
+type TensorMesh2D <: AbstractTensorMesh
     hx::Vector{Float64}
     hy::Vector{Float64}
     x0::Vector{Float64}
     cnt::MeshCount.TensorMesh2DCounters
-    TensorMesh2D(hx, hy, x0) = new(hx, hy, x0, MeshCount.countTensorMesh([length(hx), length(hy)]))
+    ops::MeshOperators.DifferentialOperators
+    TensorMesh2D(hx, hy, x0) = new(hx, hy, x0, MeshCount.countTensorMesh([length(hx), length(hy)]), MeshOperators.DifferentialOperators())
     vol::Vector{Float64}
     area::Vector{Float64}
     edge::Vector{Float64}
 end
 
-type TensorMesh3D <: SimpegMesh3D
+type TensorMesh3D <: AbstractTensorMesh
     hx::Vector{Float64}
     hy::Vector{Float64}
     hz::Vector{Float64}
     x0::Vector{Float64}
     cnt::MeshCount.TensorMesh3DCounters
-    TensorMesh3D(hx, hy, hz, x0) = new(hx, hy, hz, x0, MeshCount.countTensorMesh([length(hx), length(hy), length(hz)]))
+    ops::MeshOperators.DifferentialOperators
+    TensorMesh3D(hx, hy, hz, x0) = new(hx, hy, hz, x0, MeshCount.countTensorMesh([length(hx), length(hy), length(hz)]), MeshOperators.DifferentialOperators())
     vol::Vector{Float64}
     area::Vector{Float64}
     edge::Vector{Float64}
@@ -48,7 +50,7 @@ function TensorMesh(hx::Vector{Float64}; x0=zeros(1))
     return M
 end
 
-function TensorMesh(hx::Vector{Float64},hy::Vector{Float64}; x0=zeros(2))
+function TensorMesh(hx::Vector{Float64}, hy::Vector{Float64}; x0=zeros(2))
     M = TensorMesh2D(hx, hy, x0)
     M.vol  = (hx * hy')[:]
     M.area = [
@@ -62,11 +64,7 @@ function TensorMesh(hx::Vector{Float64},hy::Vector{Float64}; x0=zeros(2))
     return M
 end
 
-function TensorMesh(hx::Vector{Float64},hy::Vector{Float64},hz::Vector{Float64}; x0=zeros(3))
-
-    # area1 = outer(ones(n[0]+1), Utils.mkvc(outer(vh[1], vh[2])))
-    # area2 = outer(vh[0], Utils.mkvc(outer(ones(n[1]+1), vh[2])))
-    # area3 = outer(vh[0], Utils.mkvc(outer(vh[1], ones(n[2]+1))))
+function TensorMesh(hx::Vector{Float64}, hy::Vector{Float64}, hz::Vector{Float64}; x0=zeros(3))
     M = TensorMesh3D(hx, hy, hz, x0)
     M.vol = ((hx * hy')[:] * hz')[:]
     M.area = [
@@ -81,13 +79,5 @@ function TensorMesh(hx::Vector{Float64},hy::Vector{Float64},hz::Vector{Float64};
              ]
     return M
 end
-
-hx = ones(1)
-hy = ones(2)
-hz = ones(3)
-
-M = TensorMesh(hx, hy, hz)
-println(M)
-println(M.cnt.nF)
 
 end

@@ -2,16 +2,24 @@ module SimPEG
 
 # using BigLib: thing1, thing2
 
-import .Mesh
+import Mesh
+importall Utils
+import LinearOperators: faceDiv
+
+
 
 export Mesh
 
-type MyType
-    x
-end
 
-bar(x) = 2x
-foo(a::MyType) = bar(a.x) + 1
+hx = ones(1)
+hy = ones(2)
+hz = ones(3)*2
 
-show(io, a::MyType) = print(io, "MyType $(a.x)")
+M = Mesh.TensorMesh(hx, hy, hz)
+println(M)
+println(M.cnt.nF)
+
+@time println(full(faceDiv(M)))
+@time println(full(faceDiv(M)))
+
 end
