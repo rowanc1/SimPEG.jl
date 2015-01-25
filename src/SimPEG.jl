@@ -2,7 +2,7 @@ module SimPEG
 
 # using BigLib: thing1, thing2
 
-import Mesh
+import .Mesh
 
 export Mesh
 
