@@ -8,6 +8,7 @@ abstract MeshCounters3D <: MeshCounters
 
 
 type TensorMesh1DCounters <: MeshCounters1D
+    dim::Int64
     nC::Int64
     nN::Int64
     nF::Int64
@@ -25,6 +26,7 @@ type TensorMesh1DCounters <: MeshCounters1D
 end
 
 type TensorMesh2DCounters <: MeshCounters2D
+    dim::Int64
     nC::Int64
     nN::Int64
     nF::Int64
@@ -48,6 +50,7 @@ type TensorMesh2DCounters <: MeshCounters2D
 end
 
 type TensorMesh3DCounters <: MeshCounters3D
+    dim::Int64
     nC::Int64
     nN::Int64
     nF::Int64
@@ -90,6 +93,7 @@ function countTensorMesh(n::Vector{Int64})
         vnE  = [prod(vnEx)]
 
         return TensorMesh1DCounters(
+                1,
                 prod(vnC), prod(vnN), sum(vnF), sum(vnE),
                 vnC, vnN, vnF, vnE,
                 vnC[1],
@@ -114,6 +118,7 @@ function countTensorMesh(n::Vector{Int64})
         vnE  = [prod(vnEx), prod(vnEy)]
 
         return TensorMesh2DCounters(
+                2,
                 prod(vnC), prod(vnN), sum(vnF), sum(vnE),
                 vnC, vnN, vnF, vnE,
                 vnC[1], vnC[2],
@@ -140,6 +145,7 @@ function countTensorMesh(n::Vector{Int64})
         vnE  = [prod(vnEx), prod(vnEy), prod(vnEz)]
 
         return TensorMesh3DCounters(
+                3,
                 prod(vnC), prod(vnN), sum(vnF), sum(vnE),
                 vnC, vnN, vnF, vnE,
                 vnC[1], vnC[2], vnC[3],
