@@ -7,7 +7,7 @@ include("Mesh.jl")
 # importall LinearOperators
 # importall MeshGrid
 
-# export Mesh
+export Mesh
 
 
 # hx = ones(100)

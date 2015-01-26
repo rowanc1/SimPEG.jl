@@ -5,6 +5,8 @@ abstract AbstractTensorMesh <: AbstractSimpegMesh
 
 import MeshCount
 
+export TensorMesh
+
 type DifferentialOperators
     DifferentialOperators() = new()
     faceDiv::SparseMatrixCSC
