@@ -1,40 +1,35 @@
-module MeshGrid
+include("Mesh.jl")
+include("Utils.jl")
 
-import Mesh
-
-import Utils.ndgrid
-
-export vectorCCx, vectorCCy, vectorCCz, vectorNx, vectorNy, vectorNz, getTensor, gridCC, gridN, gridFx, gridFy, gridFz, gridEx, gridEy, gridEz
-
-function vectorCCx(M::Mesh.AbstractTensorMesh)
+function vectorCCx(M::AbstractTensorMesh)
     return [0, cumsum(M.hx[1:end-1])] + 0.5.*M.hx + M.x0[1]
 end
 
-function vectorCCy(M::Mesh.AbstractTensorMesh)
+function vectorCCy(M::AbstractTensorMesh)
     if M.cnt.dim < 2; return; end
     return [0, cumsum(M.hy[1:end-1])] + 0.5.*M.hy + M.x0[2]
 end
 
-function vectorCCz(M::Mesh.AbstractTensorMesh)
+function vectorCCz(M::AbstractTensorMesh)
     if M.cnt.dim < 3; return; end
     return [0, cumsum(M.hz[1:end-1])] + 0.5.*M.hz + M.x0[3]
 end
 
-function vectorNx(M::Mesh.AbstractTensorMesh)
+function vectorNx(M::AbstractTensorMesh)
     return [0., cumsum(M.hx)] + M.x0[1]
 end
 
-function vectorNy(M::Mesh.AbstractTensorMesh)
+function vectorNy(M::AbstractTensorMesh)
     if M.cnt.dim < 2; return; end
     return [0., cumsum(M.hy)] + M.x0[2]
 end
 
-function vectorNz(M::Mesh.AbstractTensorMesh)
+function vectorNz(M::AbstractTensorMesh)
     if M.cnt.dim < 3; return; end
     return [0., cumsum(M.hz)] + M.x0[3]
 end
 
-function getTensor(M::Mesh.AbstractTensorMesh, key::String="CC")
+function getTensor(M::AbstractTensorMesh, key::String="CC")
     """ Returns a tensor list.
 
     :param str key: What tensor (see below)
@@ -84,40 +79,38 @@ function getTensor(M::Mesh.AbstractTensorMesh, key::String="CC")
 end
 
 
-function gridCC(M::Mesh.AbstractTensorMesh; asVector=true)
+function gridCC(M::AbstractTensorMesh; asVector=true)
     return ndgrid(getTensor(M, "CC")...; asVector=asVector)
 end
 
-function gridN(M::Mesh.AbstractTensorMesh; asVector=true)
+function gridN(M::AbstractTensorMesh; asVector=true)
     return ndgrid(getTensor(M, "N")...; asVector=asVector)
 end
 
-function gridFx(M::Mesh.AbstractTensorMesh; asVector=true)
+function gridFx(M::AbstractTensorMesh; asVector=true)
     return ndgrid(getTensor(M, "Fx")...; asVector=asVector)
 end
 
-function gridFy(M::Mesh.AbstractTensorMesh; asVector=true)
+function gridFy(M::AbstractTensorMesh; asVector=true)
     if M.cnt.dim < 2; return; end
     return ndgrid(getTensor(M, "Fy")...; asVector=asVector)
 end
 
-function gridFz(M::Mesh.AbstractTensorMesh; asVector=true)
+function gridFz(M::AbstractTensorMesh; asVector=true)
     if M.cnt.dim < 3; return; end
     return ndgrid(getTensor(M, "Fz")...; asVector=asVector)
 end
 
-function gridEx(M::Mesh.AbstractTensorMesh; asVector=true)
+function gridEx(M::AbstractTensorMesh; asVector=true)
     return ndgrid(getTensor(M, "Ex")...; asVector=asVector)
 end
 
-function gridEy(M::Mesh.AbstractTensorMesh; asVector=true)
+function gridEy(M::AbstractTensorMesh; asVector=true)
     if M.cnt.dim < 2; return; end
     return ndgrid(getTensor(M, "Ey")...; asVector=asVector)
 end
 
-function gridEz(M::Mesh.AbstractTensorMesh; asVector=true)
+function gridEz(M::AbstractTensorMesh; asVector=true)
     if M.cnt.dim < 3; return; end
     return ndgrid(getTensor(M, "Ez")...; asVector=asVector)
-end
-
 end

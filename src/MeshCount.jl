@@ -1,5 +1,3 @@
-module MeshCount
-
 
 abstract MeshCounters
 abstract MeshCounters1D <: MeshCounters
@@ -156,8 +154,5 @@ function countTensorMesh(n::Vector{Int64})
                 vnEx, vnEy, vnEz
             )
     end
-
-end
-
 
 end

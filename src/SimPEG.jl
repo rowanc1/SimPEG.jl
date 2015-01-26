@@ -1,38 +1,13 @@
 module SimPEG
 
+export TensorMesh
+export sdiag, ddx, av, avExtrap, kron3, sdInv, ndgrid
+export vectorCCx, vectorCCy, vectorCCz, vectorNx, vectorNy, vectorNz, getTensor, gridCC, gridN, gridFx, gridFy, gridFz, gridEx, gridEy, gridEz
+export faceDiv, nodalGrad, edgeCurl, aveF2CC, aveF2CCV, aveCC2F, aveE2CC, aveE2CCV, aveN2CC, aveN2E, aveN2F, getFaceInnerProduct, getEdgeInnerProduct
 
-import Mesh
-importall Utils
-importall LinearOperators
-importall MeshGrid
-
-export Mesh
-
-
-hx = ones(100)
-hy = ones(100)
-hz = ones(3)*2
-
-M = Mesh.TensorMesh(hx, hy)
-println(M.cnt.vnEx)
-
-D = faceDiv(M)
-C = edgeCurl(M)
-G = nodalGrad(M)
-# D*C*G
-
-Av = aveCC2F(M)
-sigma = ones(M.cnt.nC)
-Msig = getFaceInnerProduct(M, sigma)
-
-A = -D*Msig*D'
-A[end,end] /= 1./M.vol[end]
-
-q = zeros(M.cnt.vnC...)
-q[50,25] = -1.0
-q[50,75] = +1.0
-q = q[:]
-
-@time phi = A\q
+include("Mesh.jl")
+include("Utils.jl")
+include("MeshGrid.jl")
+include("LinearOperators.jl")
 
 end

@@ -1,6 +1,3 @@
-module Utils
-
-export sdiag, ddx, av, avExtrap, kron3, sdInv, ndgrid
 
 function sdiag(x::Vector)
     spdiagm((x,),0)
@@ -62,6 +59,4 @@ function ndgrid{T}(vs::AbstractVector{T}...;asVector=false)
     else
         return out
     end
-end
-
 end

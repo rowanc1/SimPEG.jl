@@ -1,12 +1,8 @@
-module LinearOperators
+include("Mesh.jl")
+include("Utils.jl")
 
-import Mesh
 
-import Utils: ddx, sdiag, kron3, av, avExtrap, sdInv
-
-export faceDiv, nodalGrad, edgeCurl, aveF2CC, aveF2CCV, aveCC2F, aveE2CC, aveE2CCV, aveN2CC, aveN2E, aveN2F, getFaceInnerProduct, getEdgeInnerProduct
-
-function faceDiv(M::Mesh.AbstractTensorMesh)
+function faceDiv(M::AbstractTensorMesh)
 
     if isdefined(M.ops, :faceDiv)
         return M.ops.faceDiv
@@ -36,7 +32,7 @@ function faceDiv(M::Mesh.AbstractTensorMesh)
 
 end
 
-function nodalGrad(M::Mesh.AbstractTensorMesh)
+function nodalGrad(M::AbstractTensorMesh)
 
     if isdefined(M.ops, :nodalGrad)
         return M.ops.nodalGrad
@@ -64,7 +60,7 @@ function nodalGrad(M::Mesh.AbstractTensorMesh)
 
 end
 
-function edgeCurl(M::Mesh.AbstractTensorMesh)
+function edgeCurl(M::AbstractTensorMesh)
 
     if isdefined(M.ops, :edgeCurl)
         return M.ops.edgeCurl
@@ -114,7 +110,7 @@ end
 
 # --------------- Averaging ---------------------
 
-function aveF2CC(M::Mesh.AbstractTensorMesh)
+function aveF2CC(M::AbstractTensorMesh)
     """Construct the averaging operator on cell faces to cell centers."""
     if isdefined(M.ops, :aveF2CC)
         return M.ops.aveF2CC
@@ -137,7 +133,7 @@ end
 
 
 
-function aveF2CCV(M::Mesh.AbstractTensorMesh)
+function aveF2CCV(M::AbstractTensorMesh)
     """Construct the averaging operator on cell faces to cell centers."""
     if isdefined(M.ops, :aveF2CCV)
         return M.ops.aveF2CCV
@@ -156,7 +152,7 @@ function aveF2CCV(M::Mesh.AbstractTensorMesh)
 end
 
 
-function aveCC2F(M::Mesh.AbstractTensorMesh)
+function aveCC2F(M::AbstractTensorMesh)
     """Construct the averaging operator on cell cell centers to faces."""
     if isdefined(M.ops, :aveCC2F)
         return M.ops.aveCC2F
@@ -176,7 +172,7 @@ function aveCC2F(M::Mesh.AbstractTensorMesh)
 end
 
 
-function aveE2CC(M::Mesh.AbstractTensorMesh)
+function aveE2CC(M::AbstractTensorMesh)
     """Construct the averaging operator on cell edges to cell centers."""
     if isdefined(M.ops, :aveE2CC)
         return M.ops.aveE2CC
@@ -198,7 +194,7 @@ function aveE2CC(M::Mesh.AbstractTensorMesh)
 end
 
 
-function aveE2CCV(M::Mesh.AbstractTensorMesh)
+function aveE2CCV(M::AbstractTensorMesh)
     """Construct the averaging operator on cell edges to cell centers."""
     if isdefined(M.ops, :aveE2CCV)
         return M.ops.aveE2CCV
@@ -217,7 +213,7 @@ function aveE2CCV(M::Mesh.AbstractTensorMesh)
 end
 
 
-function aveN2CC(M::Mesh.AbstractTensorMesh)
+function aveN2CC(M::AbstractTensorMesh)
     """Construct the averaging operator on cell nodes to cell centers."""
     if isdefined(M.ops, :aveN2CC)
         return M.ops.aveN2CC
@@ -234,7 +230,7 @@ function aveN2CC(M::Mesh.AbstractTensorMesh)
 end
 
 
-function aveN2E(M::Mesh.AbstractTensorMesh)
+function aveN2E(M::AbstractTensorMesh)
     """Construct the averaging operator on cell nodes to cell edges, keeping each dimension separate."""
 
     if isdefined(M.ops, :aveN2E)
@@ -255,7 +251,7 @@ function aveN2E(M::Mesh.AbstractTensorMesh)
 end
 
 
-function aveN2F(M::Mesh.AbstractTensorMesh)
+function aveN2F(M::AbstractTensorMesh)
     """Construct the averaging operator on cell nodes to cell faces, keeping each dimension separate."""
     if isdefined(M.ops, :aveN2F)
         return M.ops.aveN2F
@@ -274,7 +270,7 @@ function aveN2F(M::Mesh.AbstractTensorMesh)
     return M.ops.aveN2F
 end
 
-function getTensorInnerProduct(projType::String, M::Mesh.AbstractTensorMesh, prop=ones(M.cnt.nC); invProp::Bool=false, invMat::Bool=false)
+function getTensorInnerProduct(projType::String, M::AbstractTensorMesh, prop=ones(M.cnt.nC); invProp::Bool=false, invMat::Bool=false)
 
     @assert projType in ["E", "F"]
 
@@ -306,11 +302,9 @@ function getTensorInnerProduct(projType::String, M::Mesh.AbstractTensorMesh, pro
 
 end
 
-function getFaceInnerProduct(M::Mesh.AbstractTensorMesh, prop=ones(M.cnt.nC); invProp::Bool=false, invMat::Bool=false)
+function getFaceInnerProduct(M::AbstractTensorMesh, prop=ones(M.cnt.nC); invProp::Bool=false, invMat::Bool=false)
     return getTensorInnerProduct("F", M, prop; invProp=invProp, invMat=invMat)
 end
-function getEdgeInnerProduct(M::Mesh.AbstractTensorMesh, prop=ones(M.cnt.nC); invProp::Bool=false, invMat::Bool=false)
+function getEdgeInnerProduct(M::AbstractTensorMesh, prop=ones(M.cnt.nC); invProp::Bool=false, invMat::Bool=false)
     return getTensorInnerProduct("E", M, prop; invProp=invProp, invMat=invMat)
-end
-
 end

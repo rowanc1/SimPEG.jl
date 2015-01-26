@@ -1,9 +1,7 @@
-module Mesh
-
 abstract AbstractSimpegMesh
 abstract AbstractTensorMesh <: AbstractSimpegMesh
 
-import MeshCount
+include("MeshCount.jl")
 
 type DifferentialOperators
     DifferentialOperators() = new()
@@ -23,9 +21,9 @@ end
 type TensorMesh1D <: AbstractTensorMesh
     hx::Vector{Float64}
     x0::Vector{Float64}
-    cnt::MeshCount.TensorMesh1DCounters
+    cnt::TensorMesh1DCounters
     ops::DifferentialOperators
-    TensorMesh1D(hx, x0) = new(hx, x0, MeshCount.countTensorMesh([length(hx)]), DifferentialOperators())
+    TensorMesh1D(hx, x0) = new(hx, x0, countTensorMesh([length(hx)]), DifferentialOperators())
     vol::Vector{Float64}
     area::Vector{Float64}
     edge::Vector{Float64}
@@ -35,9 +33,9 @@ type TensorMesh2D <: AbstractTensorMesh
     hx::Vector{Float64}
     hy::Vector{Float64}
     x0::Vector{Float64}
-    cnt::MeshCount.TensorMesh2DCounters
+    cnt::TensorMesh2DCounters
     ops::DifferentialOperators
-    TensorMesh2D(hx, hy, x0) = new(hx, hy, x0, MeshCount.countTensorMesh([length(hx), length(hy)]), DifferentialOperators())
+    TensorMesh2D(hx, hy, x0) = new(hx, hy, x0, countTensorMesh([length(hx), length(hy)]), DifferentialOperators())
     vol::Vector{Float64}
     area::Vector{Float64}
     edge::Vector{Float64}
@@ -48,9 +46,9 @@ type TensorMesh3D <: AbstractTensorMesh
     hy::Vector{Float64}
     hz::Vector{Float64}
     x0::Vector{Float64}
-    cnt::MeshCount.TensorMesh3DCounters
+    cnt::TensorMesh3DCounters
     ops::DifferentialOperators
-    TensorMesh3D(hx, hy, hz, x0) = new(hx, hy, hz, x0, MeshCount.countTensorMesh([length(hx), length(hy), length(hz)]), DifferentialOperators())
+    TensorMesh3D(hx, hy, hz, x0) = new(hx, hy, hz, x0, countTensorMesh([length(hx), length(hy), length(hz)]), DifferentialOperators())
     vol::Vector{Float64}
     area::Vector{Float64}
     edge::Vector{Float64}
@@ -92,6 +90,4 @@ function TensorMesh(hx::Vector{Float64}, hy::Vector{Float64}, hz::Vector{Float64
                 ( ones(M.cnt.nNx) * ( ones(M.cnt.nNy) * hz' )[:]' )[:]
              ]
     return M
-end
-
 end
