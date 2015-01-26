@@ -2,7 +2,7 @@ module SimPEG
 
 include("Mesh.jl")
 
-# import Mesh
+import .Mesh
 # importall Utils
 # importall LinearOperators
 # importall MeshGrid
