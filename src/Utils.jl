@@ -1,3 +1,4 @@
+export sdiag, ddx, av, avExtrap, kron3, sdInv, ndgrid
 
 function sdiag(x::Vector)
     spdiagm((x,),0)

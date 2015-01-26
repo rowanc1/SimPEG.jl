@@ -1,3 +1,5 @@
+export TensorMesh
+
 abstract AbstractSimpegMesh
 abstract AbstractTensorMesh <: AbstractSimpegMesh
 

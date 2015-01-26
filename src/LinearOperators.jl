@@ -1,6 +1,4 @@
-include("Mesh.jl")
-include("Utils.jl")
-
+export faceDiv, nodalGrad, edgeCurl, aveF2CC, aveF2CCV, aveCC2F, aveE2CC, aveE2CCV, aveN2CC, aveN2E, aveN2F, getFaceInnerProduct, getEdgeInnerProduct
 
 function faceDiv(M::AbstractTensorMesh)
 

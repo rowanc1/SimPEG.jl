@@ -1,5 +1,4 @@
-include("Mesh.jl")
-include("Utils.jl")
+export vectorCCx, vectorCCy, vectorCCz, vectorNx, vectorNy, vectorNz, getTensor, gridCC, gridN, gridFx, gridFy, gridFz, gridEx, gridEy, gridEz
 
 function vectorCCx(M::AbstractTensorMesh)
     return [0, cumsum(M.hx[1:end-1])] + 0.5.*M.hx + M.x0[1]
